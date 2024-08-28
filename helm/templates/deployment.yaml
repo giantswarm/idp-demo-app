@@ -1,0 +1,81 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "[[project-name]].fullname" . }}
+  labels:
+    {{- include "[[project-name]].labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "[[project-name]].selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "[[project-name]].selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "[[project-name]].serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          env:
+            - name: LISTEN_PORT
+              value: "{{ .Values.podListenPort | default "8080" }}"
+          securityContext:
+            allowPrivilegeEscalation: false
+            seccompProfile:
+              type: "RuntimeDefault"
+            capabilities:
+              drop:
+              - ALL
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            runAsUser: 65535
+            runAsGroup: 65535
+          image: "{{ .Values.image.registry }}/{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.podListenPort | default 8080 }}
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /ping
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /hello
+              port: http
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                topologyKey: "kubernetes.io/hostname"
+                labelSelector:
+                  matchExpressions:
+                    - key: "app.kubernetes.io/name"
+                      operator: In
+                      values:
+                        - {{ include "[[project-name]].name" . }}
+                    - key: "app.kubernetes.io/instance"
+                      operator: In
+                      values:
+                        - {{ .Release.Name }}

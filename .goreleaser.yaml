@@ -1,0 +1,125 @@
+project_name: [[image-name]]
+builds:
+  - <<: &build_defaults
+      binary: [[image-name]]
+      main: main.go
+      ldflags:
+        - -s -w
+      env:
+        - CGO_ENABLED=0
+    id: linux
+    goos:
+      - linux
+    goarch:
+      - amd64
+      - arm64
+      - arm
+archives:
+  - name_template: "{{ .Binary }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    id: all
+    builds: [linux, darwin]
+    format: tar.gz
+    files:
+      - none*
+dockers:
+  - image_templates:
+      - "[[registry-domain]]/[[registry-name]]/[[image-name]]:{{ .Tag }}-amd64"
+      - "[[registry-domain]]/[[registry-name]]/[[image-name]]:latest-amd64"
+    dockerfile: Dockerfile
+    use: buildx
+    goos: linux
+    goarch: amd64
+    build_flag_templates:
+      - "--pull"
+      - "--label=org.opencontainers.image.created={{ .Date }}"
+      - "--label=org.opencontainers.image.name={{ .ProjectName }}"
+      - "--label=org.opencontainers.image.revision={{ .FullCommit }}"
+      - "--label=org.opencontainers.image.version={{ .Version }}"
+      - "--label=org.opencontainers.image.source={{ .GitURL }}"
+      - "--platform=linux/amd64"
+  - image_templates:
+      - "[[registry-domain]]/[[registry-name]]/[[image-name]]:{{ .Tag }}-arm64"
+      - "[[registry-domain]]/[[registry-name]]/[[image-name]]:latest-arm64"
+    dockerfile: Dockerfile
+    use: buildx
+    goos: linux
+    goarch: arm64
+    build_flag_templates:
+      - "--pull"
+      - "--label=org.opencontainers.image.created={{ .Date }}"
+      - "--label=org.opencontainers.image.name={{ .ProjectName }}"
+      - "--label=org.opencontainers.image.revision={{ .FullCommit }}"
+      - "--label=org.opencontainers.image.version={{ .Version }}"
+      - "--label=org.opencontainers.image.source={{ .GitURL }}"
+      - "--platform=linux/arm64"
+  - image_templates:
+      - "[[registry-domain]]/[[registry-name]]/[[image-name]]:{{ .Tag }}-arm"
+      - "[[registry-domain]]/[[registry-name]]/[[image-name]]:latest-arm"
+    dockerfile: Dockerfile
+    use: buildx
+    goos: linux
+    goarch: arm
+    build_flag_templates:
+      - "--pull"
+      - "--label=org.opencontainers.image.created={{ .Date }}"
+      - "--label=org.opencontainers.image.name={{ .ProjectName }}"
+      - "--label=org.opencontainers.image.revision={{ .FullCommit }}"
+      - "--label=org.opencontainers.image.version={{ .Version }}"
+      - "--label=org.opencontainers.image.source={{ .GitURL }}"
+      - "--platform=linux/arm"
+docker_manifests:
+  - name_template: "[[registry-domain]]/[[registry-name]]/[[image-name]]:{{ .Tag }}"
+    image_templates:
+      - "[[registry-domain]]/[[registry-name]]/[[image-name]]:{{ .Tag }}-amd64"
+      - "[[registry-domain]]/[[registry-name]]/[[image-name]]:{{ .Tag }}-arm64"
+      - "[[registry-domain]]/[[registry-name]]/[[image-name]]:{{ .Tag }}-arm"
+  - name_template: "[[registry-domain]]/[[registry-name]]/[[image-name]]:latest"
+    image_templates:
+      - "[[registry-domain]]/[[registry-name]]/[[image-name]]:latest-amd64"
+      - "[[registry-domain]]/[[registry-name]]/[[image-name]]:latest-arm64"
+      - "[[registry-domain]]/[[registry-name]]/[[image-name]]:latest-arm"
+docker_signs:
+  - cmd: cosign
+    env:
+      - COSIGN_EXPERIMENTAL=1
+    args:
+      - sign
+      - "--yes"
+      - "${artifact}"
+    artifacts: all
+    output: true
+source:
+  enabled: true
+  name_template: "{{ .ProjectName }}_{{ .Version }}_src"
+sboms:
+  - artifacts: archive
+  - id: source
+    artifacts: source
+    documents:
+      - "{{ .ProjectName }}_{{ .Version }}_sbom.spdx.json"
+release: {}
+checksum: {}
+signs:
+  - cmd: cosign
+    env:
+      - COSIGN_EXPERIMENTAL=1
+    certificate: "${artifact}.pem"
+    args:
+      - sign-blob
+      - "--output-certificate=${certificate}"
+      - "--output-signature=${signature}"
+      - "${artifact}"
+      - "--yes"
+    artifacts: checksum
+    output: true
+changelog:
+  use: github
+  groups:
+    - title: Features
+      regexp: '^.*?feat(\([[:word:]]+\))??!?:.+$'
+      order: 0
+    - title: "Bug fixes"
+      regexp: '^.*?bug(\([[:word:]]+\))??!?:.+$'
+      order: 1
+    - title: Others
+      order: 999

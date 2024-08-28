@@ -1,0 +1,4 @@
+checks:
+  exclude:
+  # when used with HPA, we don't set static value for replicas
+  - pdb-min-available

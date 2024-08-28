@@ -1,0 +1,34 @@
+name: Pre-commit auto-update
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "30 0 * * *"
+
+jobs:
+  pre-commit-auto-update:
+    permissions:
+      contents: write
+      pull-requests: write
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.11
+      - name: Install pre-commit
+        run: pip install -U pre-commit
+      - name: Run pre-commit autoupdate
+        run: pre-commit autoupdate
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v5
+        with:
+          branch: update/pre-commit-autoupdate
+          title: "[Bot] auto-update pre-commit hooks"
+          commit-message: Auto-update pre-commit hooks
+          author: Bot <bot@users.noreply.github.com>
+          committer: Bot <bot@users.noreply.github.com>
+          body: |
+            Updates versions of tools in pre-commit configs to latest version.
+          labels: dependencies, bot, pre-commit
