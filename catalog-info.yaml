@@ -1,15 +1,15 @@
 apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
-  name: [[project-name]]
+  name: piontec-kratix-1
   description: A Golang service responding to HTTP requests.
   annotations:
-    backstage.io/kubernetes-id: [[project-name]]
-    backstage.io/source-location: url:https://github.com/[[repo-owner]]/[[project-name]]
-    backstage.io/techdocs-ref: url:https://github.com/[[repo-owner]]/[[project-name]]/tree/main
-    giantswarm.io/deployment-names: [[project-name]],[[project-name]]-app
-    github.com/project-slug: [[repo-owner]]/[[project-name]]
-    circleci.com/project-slug: github/giantswarm/[[project-name]]
+    backstage.io/kubernetes-id: piontec-kratix-1
+    backstage.io/source-location: url:https://github.com/demotechinc/piontec-kratix-1
+    backstage.io/techdocs-ref: url:https://github.com/demotechinc/piontec-kratix-1/tree/main
+    giantswarm.io/deployment-names: piontec-kratix-1,piontec-kratix-1-app
+    github.com/project-slug: demotechinc/piontec-kratix-1
+    circleci.com/project-slug: github/giantswarm/piontec-kratix-1
 spec:
   type: service
   lifecycle: experimental

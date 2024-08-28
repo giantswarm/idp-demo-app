@@ -1,9 +1,9 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  name: "{{ include "[[project-name]].fullname" . }}-test-connection"
+  name: "{{ include "piontec-kratix-1.fullname" . }}-test-connection"
   labels:
-    {{- include "[[project-name]].labels" . | nindent 4 }}
+    {{- include "piontec-kratix-1.labels" . | nindent 4 }}
   annotations:
     "helm.sh/hook": test
 spec:
@@ -11,7 +11,7 @@ spec:
     - name: wget
       image: "busybox:stable"
       command: ['wget']
-      args: ['{{ include "[[project-name]].fullname" . }}:{{ .Values.service.port }}/hello']
+      args: ['{{ include "piontec-kratix-1.fullname" . }}:{{ .Values.service.port }}/hello']
       securityContext:
         capabilities:
           drop:

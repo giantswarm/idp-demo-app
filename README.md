@@ -1,6 +1,6 @@
-# [[project-name]]
+# piontec-kratix-1
 
-![validation and test result](https://github.com/[[repo-owner]]/[[project-name]]/actions/workflows/validate-test.yaml/badge.svg?event=push)
+![validation and test result](https://github.com/demotechinc/piontec-kratix-1/actions/workflows/validate-test.yaml/badge.svg?event=push)
 
 ## Intro
 

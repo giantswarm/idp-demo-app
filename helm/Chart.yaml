@@ -1,11 +1,11 @@
 apiVersion: v2
-name: [[image-name]]
+name: piontec-kratix-1
 description: A Helm chart to deploy the sample golang based web service project.
 type: application
 kubeVersion: ">=1.25.0"
-home: https://github.com/[[repo-owner]]/[[image-name]]/
+home: https://github.com/demotechinc/piontec-kratix-1/
 maintainers:
-  - name: [[repo-owner]]
+  - name: demotechinc
     email: noemail@nothing.com
 icon: https://s.giantswarm.io/app-icons/giantswarm/1/dark.svg
 

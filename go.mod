@@ -1,4 +1,4 @@
-module github.com/[[repo-owner]]/[[project-name]]
+module github.com/demotechinc/piontec-kratix-1
 
 go 1.20
 

@@ -1,12 +1,12 @@
 {{- if .Values.ingress.enabled -}}
-{{- $fullName := include "[[project-name]].fullname" . -}}
+{{- $fullName := include "piontec-kratix-1.fullname" . -}}
 {{- $svcPort := .Values.service.port -}}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: {{ $fullName }}
   labels:
-    {{- include "[[project-name]].labels" . | nindent 4 }}
+    {{- include "piontec-kratix-1.labels" . | nindent 4 }}
   {{- with .Values.ingress.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}

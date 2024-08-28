@@ -2,14 +2,14 @@
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
-  name: {{ include "[[project-name]].fullname" . }}
+  name: {{ include "piontec-kratix-1.fullname" . }}
   labels:
-    {{- include "[[project-name]].labels" . | nindent 4 }}
+    {{- include "piontec-kratix-1.labels" . | nindent 4 }}
 spec:
   endpoints:
   - path: /metrics
     port: http
   selector:
     matchLabels:
-      {{- include "[[project-name]].selectorLabels" . | nindent 4 }}
+      {{- include "piontec-kratix-1.selectorLabels" . | nindent 4 }}
 {{- end }}

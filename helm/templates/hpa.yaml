@@ -2,14 +2,14 @@
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: {{ include "[[project-name]].fullname" . }}
+  name: {{ include "piontec-kratix-1.fullname" . }}
   labels:
-    {{- include "[[project-name]].labels" . | nindent 4 }}
+    {{- include "piontec-kratix-1.labels" . | nindent 4 }}
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: {{ include "[[project-name]].fullname" . }}
+    name: {{ include "piontec-kratix-1.fullname" . }}
   minReplicas: {{ .Values.autoscaling.minReplicas }}
   maxReplicas: {{ .Values.autoscaling.maxReplicas }}
   metrics:
