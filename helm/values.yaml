@@ -1,0 +1,99 @@
+# Default values for [[project-name]].
+
+# -- Override the default name generated for the chart objects.
+nameOverride: ""
+# -- Override the default name generated for this specific chart Release.
+fullnameOverride: ""
+
+image:
+  # -- Set the domain of your container images registry.
+  registry: "[[registry-domain]]"
+  # -- Set the name of the repository within the registry.
+  repository: "[[registry-name]]/[[image-name]]"
+  # -- Configure image pull policy.
+  pullPolicy: IfNotPresent
+# -- Configure login secrets for the container images registry.
+imagePullSecrets: []
+
+serviceAccount:
+  # -- Specifies whether a service account should be created.
+  create: true
+  # -- Annotations to add to the service account.
+  annotations: {}
+  # -- The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+# -- Set additional annotations for the pods created.
+podAnnotations: {}
+# -- Configure the TCP port on which your pods will listen for connections.
+podListenPort: 8080
+
+# -- Configure [Pod resources](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/).
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+# -- Number of Pod replicas to deploy. Used only if 'autoscaling.enabled' is 'false'.
+replicaCount: 3
+autoscaling:
+  # -- Turn on Pod replicas number autoscaling instead of setting a constant value. your
+  # cluster must support [ Horizontal Pod Autoscaling ](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/).
+  enabled: true
+  # -- Min number of Pods autoscaler can deploy.
+  minReplicas: 3
+  # -- Max number of Pods autoscaler can deploy.
+  maxReplicas: 10
+  # -- Pod scale up critieria based on CPU usage.
+  targetCPUUtilizationPercentage: 80
+  # -- Pod scale up critieria based on Memory usage.
+  targetMemoryUtilizationPercentage: 80
+# -- Should the chart deploy a [PodDisruptionBudget](https://kubernetes.io/docs/tasks/run-application/configure-pdb/)
+# to limit disruptions based on administrative tasks.
+pdb:
+  enabled: true
+# -- Optional node delector to limit the nodes where pods of the chart can be deployed.
+nodeSelector: {}
+
+service:
+  # -- The type of [ Service ](https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types).
+  type: ClusterIP
+  # -- TCP port that the service will be exposed on.
+  port: 80
+  # -- Optional annotations for the Service definition. If your cluster has "ExternalDNS"
+  # operator running, you can use "external-dns.alpha.kubernetes.io/hostname"
+  # annotation to [automatically register DNS name for your service](https://github.com/kubernetes-sigs/external-dns).
+  annotations:
+    {}
+    # external-dns.alpha.kubernetes.io/hostname: "mydomain.com"
+
+ingress:
+  # -- Should the Service be accessible through an Ingress. This needs an Ingress controller
+  # to be configured already on your cluster.
+  enabled: true
+  # -- Optional annotations for the Ingress definition. If your cluster has "CertManager"
+  # operator running, you can use "cert-manager.io/cluster-issuer"
+  # annotation to [automatically generate a certificate for it](https://cert-manager.io/docs/usage/).
+  annotations:
+    {}
+    # cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    # kubernetes.io/ingress.class: nginx
+  # -- HTTP host that you want to use for your service.
+  host: chart-example.local
+  # -- Optional TLS certificate configuration. You can use it with "CertManager" or
+  # provide your own certificate.
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+monitoring:
+  # -- If your cluster supports prometheus-operator configuration of metrics data,
+  # enable this to have metrics from your application automatically ingested
+  # by prometheus.
+  serviceMonitor:
+    enabled: true

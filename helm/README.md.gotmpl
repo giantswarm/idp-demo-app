@@ -1,0 +1,19 @@
+{{ template "chart.header" . }}
+{{ template "chart.deprecationWarning" . }}
+
+Chart version {{ template "chart.version" . }}, app version {{ template "chart.appVersion" . }}
+
+{{ template "chart.description" . }}
+
+{{ template "chart.homepageLine" . }}
+
+{{ template "chart.requirementsSection" . }}
+
+{{ template "chart.valuesHeader" . }}
+
+Use the values below to configure the chart's values.
+{{ template "chart.valuesTable" . }}
+
+{{ template "chart.maintainersSection" . }}
+
+{{ template "chart.sourcesSection" . }}
