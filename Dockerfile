@@ -1,5 +1,5 @@
 FROM scratch
-COPY --chmod=755 [[project-name]] /[[project-name]]
+COPY --chmod=755 laszlo-kratix-6 /laszlo-kratix-6
 USER 65534:65534
-ENTRYPOINT [ "/[[project-name]]" ]
-LABEL org.opencontainers.image.source=https://github.com/[[repo-owner]]/[[project-name]]
+ENTRYPOINT [ "/laszlo-kratix-6" ]
+LABEL org.opencontainers.image.source=https://github.com/demotechinc/laszlo-kratix-6

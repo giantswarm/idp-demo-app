@@ -47,18 +47,18 @@ jobs:
       - name: Login to GitHub Container Registry
         uses: docker/login-action@0d4c9c5ea7693da7b068278f7b52bda2a190a446 # v3.2.0
         with:
-          registry: [[registry-domain]]
-          username: [[registry-username]]
-          password: [[registry-cicd-secret-ref]]
+          registry: ghcr.io
+          username: build_bot
+          password: ${{ secrets.GITHUB_TOKEN }}
       - name: Login helm to OCI registry
-        run: helm registry login [[registry-domain]] -u [[registry-username]] -p "[[registry-cicd-secret-ref]]"
+        run: helm registry login ghcr.io -u build_bot -p "${{ secrets.GITHUB_TOKEN }}"
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@5742e2a039330cbb23ebf35f046f814d4c6ff811 # v5.1.0
         with:
           version: latest
           args: release
         env:
-          GITHUB_TOKEN: [[registry-cicd-secret-ref]]
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Run app-build-suite to build the helm chart
         run: /tmp/dabs.sh -c helm 2>&1 | tee /tmp/abs.log
       - name: Capture the helm chart name
@@ -74,11 +74,11 @@ jobs:
       - name: Check detected version
         run: '[ -z "${CHART_FILE}" ] && exit 1 || echo "CHART_FILE=${CHART_FILE}"; [ -z "${CHART_VERSION}" ] && exit 1 || echo "CHART_VERSION=${CHART_VERSION}"'
       - name: Push the helm chart to registry
-        run: helm push "${CHART_FILE}" "oci://ghcr.io/[[repo-owner]]/charts" 2>&1 | tee /tmp/helm-push.log
+        run: helm push "${CHART_FILE}" "oci://ghcr.io/demotechinc/charts" 2>&1 | tee /tmp/helm-push.log
       - name: Capture the helm chart SHA256
         run: >-
           echo "CHART_SHA256=$(
             awk -F" " '/^Digest:/ {print $2}' /tmp/helm-push.log
           )" >> "$GITHUB_ENV"
       - name: Sign the helm chart
-        run: cosign sign --upload=true -y "ghcr.io/[[repo-owner]]/charts/[[project-name]]@${CHART_SHA256}"
+        run: cosign sign --upload=true -y "ghcr.io/demotechinc/charts/laszlo-kratix-6@${CHART_SHA256}"

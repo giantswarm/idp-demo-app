@@ -1,7 +1,7 @@
-project_name: [[image-name]]
+project_name: laszlo-kratix-6
 builds:
   - <<: &build_defaults
-      binary: [[image-name]]
+      binary: laszlo-kratix-6
       main: main.go
       ldflags:
         - -s -w
@@ -23,8 +23,8 @@ archives:
       - none*
 dockers:
   - image_templates:
-      - "[[registry-domain]]/[[registry-name]]/[[image-name]]:{{ .Tag }}-amd64"
-      - "[[registry-domain]]/[[registry-name]]/[[image-name]]:latest-amd64"
+      - "ghcr.io/demotechinc/laszlo-kratix-6:{{ .Tag }}-amd64"
+      - "ghcr.io/demotechinc/laszlo-kratix-6:latest-amd64"
     dockerfile: Dockerfile
     use: buildx
     goos: linux
@@ -38,8 +38,8 @@ dockers:
       - "--label=org.opencontainers.image.source={{ .GitURL }}"
       - "--platform=linux/amd64"
   - image_templates:
-      - "[[registry-domain]]/[[registry-name]]/[[image-name]]:{{ .Tag }}-arm64"
-      - "[[registry-domain]]/[[registry-name]]/[[image-name]]:latest-arm64"
+      - "ghcr.io/demotechinc/laszlo-kratix-6:{{ .Tag }}-arm64"
+      - "ghcr.io/demotechinc/laszlo-kratix-6:latest-arm64"
     dockerfile: Dockerfile
     use: buildx
     goos: linux
@@ -53,8 +53,8 @@ dockers:
       - "--label=org.opencontainers.image.source={{ .GitURL }}"
       - "--platform=linux/arm64"
   - image_templates:
-      - "[[registry-domain]]/[[registry-name]]/[[image-name]]:{{ .Tag }}-arm"
-      - "[[registry-domain]]/[[registry-name]]/[[image-name]]:latest-arm"
+      - "ghcr.io/demotechinc/laszlo-kratix-6:{{ .Tag }}-arm"
+      - "ghcr.io/demotechinc/laszlo-kratix-6:latest-arm"
     dockerfile: Dockerfile
     use: buildx
     goos: linux
@@ -68,16 +68,16 @@ dockers:
       - "--label=org.opencontainers.image.source={{ .GitURL }}"
       - "--platform=linux/arm"
 docker_manifests:
-  - name_template: "[[registry-domain]]/[[registry-name]]/[[image-name]]:{{ .Tag }}"
+  - name_template: "ghcr.io/demotechinc/laszlo-kratix-6:{{ .Tag }}"
     image_templates:
-      - "[[registry-domain]]/[[registry-name]]/[[image-name]]:{{ .Tag }}-amd64"
-      - "[[registry-domain]]/[[registry-name]]/[[image-name]]:{{ .Tag }}-arm64"
-      - "[[registry-domain]]/[[registry-name]]/[[image-name]]:{{ .Tag }}-arm"
-  - name_template: "[[registry-domain]]/[[registry-name]]/[[image-name]]:latest"
+      - "ghcr.io/demotechinc/laszlo-kratix-6:{{ .Tag }}-amd64"
+      - "ghcr.io/demotechinc/laszlo-kratix-6:{{ .Tag }}-arm64"
+      - "ghcr.io/demotechinc/laszlo-kratix-6:{{ .Tag }}-arm"
+  - name_template: "ghcr.io/demotechinc/laszlo-kratix-6:latest"
     image_templates:
-      - "[[registry-domain]]/[[registry-name]]/[[image-name]]:latest-amd64"
-      - "[[registry-domain]]/[[registry-name]]/[[image-name]]:latest-arm64"
-      - "[[registry-domain]]/[[registry-name]]/[[image-name]]:latest-arm"
+      - "ghcr.io/demotechinc/laszlo-kratix-6:latest-amd64"
+      - "ghcr.io/demotechinc/laszlo-kratix-6:latest-arm64"
+      - "ghcr.io/demotechinc/laszlo-kratix-6:latest-arm"
 docker_signs:
   - cmd: cosign
     env:

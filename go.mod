@@ -1,4 +1,4 @@
-module github.com/[[repo-owner]]/[[project-name]]
+module github.com/demotechinc/laszlo-kratix-6
 
 go 1.20
 

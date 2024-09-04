@@ -1,6 +1,6 @@
-# [[project-name]]
+# laszlo-kratix-6
 
-![validation and test result](https://github.com/[[repo-owner]]/[[project-name]]/actions/workflows/validate-test.yaml/badge.svg?event=push)
+![validation and test result](https://github.com/demotechinc/laszlo-kratix-6/actions/workflows/validate-test.yaml/badge.svg?event=push)
 
 ## Intro
 

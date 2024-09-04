@@ -1,14 +1,14 @@
 apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
-  name: [[project-name]]
+  name: laszlo-kratix-6
   description: A Golang service responding to HTTP requests.
   annotations:
-    backstage.io/kubernetes-id: [[project-name]]
-    backstage.io/source-location: url:https://github.com/[[repo-owner]]/[[project-name]]
-    backstage.io/techdocs-ref: url:https://github.com/[[repo-owner]]/[[project-name]]/tree/main
-    giantswarm.io/deployment-names: [[project-name]],[[project-name]]-app
-    github.com/project-slug: [[repo-owner]]/[[project-name]]
+    backstage.io/kubernetes-id: laszlo-kratix-6
+    backstage.io/source-location: url:https://github.com/demotechinc/laszlo-kratix-6
+    backstage.io/techdocs-ref: url:https://github.com/demotechinc/laszlo-kratix-6/tree/main
+    giantswarm.io/deployment-names: laszlo-kratix-6,laszlo-kratix-6-app
+    github.com/project-slug: demotechinc/laszlo-kratix-6
 spec:
   type: service
   lifecycle: experimental

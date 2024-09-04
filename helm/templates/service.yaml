@@ -1,9 +1,9 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "[[project-name]].fullname" . }}
+  name: {{ include "laszlo-kratix-6.fullname" . }}
   labels:
-    {{- include "[[project-name]].labels" . | nindent 4 }}
+    {{- include "laszlo-kratix-6.labels" . | nindent 4 }}
   {{- with .Values.service.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
@@ -16,4 +16,4 @@ spec:
       protocol: TCP
       name: http
   selector:
-    {{- include "[[project-name]].selectorLabels" . | nindent 4 }}
+    {{- include "laszlo-kratix-6.selectorLabels" . | nindent 4 }}

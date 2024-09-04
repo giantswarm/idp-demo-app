@@ -1,4 +1,4 @@
-# Default values for [[project-name]].
+# Default values for laszlo-kratix-6.
 
 # -- Override the default name generated for the chart objects.
 nameOverride: ""
@@ -7,9 +7,9 @@ fullnameOverride: ""
 
 image:
   # -- Set the domain of your container images registry.
-  registry: "[[registry-domain]]"
+  registry: "ghcr.io"
   # -- Set the name of the repository within the registry.
-  repository: "[[registry-name]]/[[image-name]]"
+  repository: "demotechinc/laszlo-kratix-6"
   # -- Configure image pull policy.
   pullPolicy: IfNotPresent
 # -- Configure login secrets for the container images registry.
