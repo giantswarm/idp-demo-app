@@ -4,15 +4,23 @@ package main
 import (
 	"net/http"
 	"net/http/httptest"
-	"net/url"
 	"strings"
 	"testing"
 
+	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 )
 
+var router *gin.Engine
+
+func setup() {
+	if router == nil {
+		router = setupRouter(storeMemory)
+	}
+}
+
 func TestPingRoute(t *testing.T) {
-	router := setupRouter()
+	setup()
 
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest(http.MethodGet, "/ping", nil)
@@ -21,28 +29,66 @@ func TestPingRoute(t *testing.T) {
 	assert.Equal(t, http.StatusOK, w.Code)
 	assert.Equal(t, "pong\n", w.Body.String())
 }
-
-func TestHelloGet(t *testing.T) {
-	router := setupRouter()
+func TestCreateAlbum(t *testing.T) {
+	setup()
 
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodGet, "/hello", nil)
+	reqBody := strings.NewReader(`{"title":"New Album","artist":"Artist Name","price":9.99}`)
+	req, _ := http.NewRequest(http.MethodPost, "/albums", reqBody)
+	req.Header.Set("Content-Type", "application/json")
 	router.ServeHTTP(w, req)
 
-	assert.Equal(t, http.StatusOK, w.Code)
-	assert.Equal(t, "Hello world!\n", w.Body.String())
+	assert.Equal(t, http.StatusFound, w.Code)
 }
 
-func TestHelloPost(t *testing.T) {
-	router := setupRouter()
+func TestDeleteAlbum(t *testing.T) {
+	setup()
+
+	// Use the ID of a test album
+	albumID := "2"
+
+	// Delete the album
+	deleteReq, _ := http.NewRequest(http.MethodDelete, "/albums/"+albumID, nil)
+	deleteResp := httptest.NewRecorder()
+	router.ServeHTTP(deleteResp, deleteReq)
+
+	assert.Equal(t, http.StatusFound, deleteResp.Code)
+}
+
+func TestListAlbums(t *testing.T) {
+	setup()
 
 	w := httptest.NewRecorder()
-	data := url.Values{}
-	data.Set("name", "test")
-	req, _ := http.NewRequest(http.MethodPost, "/hello", strings.NewReader(data.Encode()))
-	req.Header.Set("Content-Type", "application/x-www-form-urlencoded; param=value")
+	req, _ := http.NewRequest(http.MethodGet, "/albums", nil)
 	router.ServeHTTP(w, req)
 
 	assert.Equal(t, http.StatusOK, w.Code)
-	assert.Equal(t, "Hello test!\n", w.Body.String())
+}
+
+func TestGetAlbumByID(t *testing.T) {
+	setup()
+
+	albumID := "1"
+
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest(http.MethodGet, "/albums/"+albumID, nil)
+	router.ServeHTTP(w, req)
+
+	assert.Equal(t, http.StatusOK, w.Code)
+}
+
+func TestUpdateAlbum(t *testing.T) {
+	setup()
+
+	// Use the ID of a test album
+	albumID := "1"
+
+	// Update the album with a new artist value
+	reqBody := strings.NewReader(`{"artist":"New Artist Name", "title":"New Album", "price":9.99}`)
+	req, _ := http.NewRequest(http.MethodPut, "/albums/"+albumID, reqBody)
+	req.Header.Set("Content-Type", "application/json")
+	updateResp := httptest.NewRecorder()
+	router.ServeHTTP(updateResp, req)
+
+	assert.Equal(t, http.StatusFound, updateResp.Code)
 }
