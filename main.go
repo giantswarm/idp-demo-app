@@ -115,15 +115,19 @@ func NewDbStore() (albumStore, error) {
 	if err != nil {
 		return nil, err
 	}
-	db.Use(gormprom.New(gormprom.Config{
+	if err = db.Use(gormprom.New(gormprom.Config{
 		DBName:          "mysql_albums", // `DBName` as metrics label
 		RefreshInterval: 10,             // refresh metrics interval (default 15 seconds)
 		StartServer:     false,          // start http server to expose metrics
 		MetricsCollector: []gormprom.MetricsCollector{
 			&gormprom.MySQL{VariableNames: []string{"Threads_running"}},
 		},
-	}))
-	db.AutoMigrate(&album{})
+	})); err != nil {
+		return nil, err
+	}
+	if err = db.AutoMigrate(&album{}); err != nil {
+		return nil, err
+	}
 	return &dbStore{db: db}, nil
 }
 
@@ -192,11 +196,14 @@ func NewAlbumsHandler(store albumStore) *AlbumsHandler {
 
 func (h AlbumsHandler) CreateAlbum(c *gin.Context) {
 	var album album
-	if err := c.ShouldBindJSON(&album); err != nil {
+	var err error
+	if err = c.ShouldBindJSON(&album); err != nil {
 		c.HTML(http.StatusInternalServerError, "error.html", gin.H{"Error": err.Error()})
 		return
 	}
-	h.store.Add(album)
+	if _, err = h.store.Add(album); err != nil {
+		c.HTML(http.StatusInternalServerError, "error.html", gin.H{"Error": err.Error()})
+	}
 	c.Redirect(http.StatusFound, "/albums")
 }
 
@@ -230,7 +237,10 @@ func (h AlbumsHandler) UpdateAlbum(c *gin.Context) {
 		return
 	}
 
-	h.store.Update(album)
+	if err := h.store.Update(album); err != nil {
+		c.HTML(http.StatusInternalServerError, "error.html", gin.H{"Error": err.Error()})
+		return
+	}
 	c.Redirect(http.StatusFound, "/albums")
 }
 
@@ -303,8 +313,8 @@ func setupRouter(storeType storeType) *gin.Engine {
 
 	router.LoadHTMLGlob("./templates/*")
 
-	var store albumStore = nil
-	var cacheStore persistence.CacheStore = nil
+	var store albumStore
+	var cacheStore persistence.CacheStore
 	if storeType == storeMemory {
 		store = NewInMemoryStore()
 		cacheStore = persistence.NewInMemoryStore(time.Second)
