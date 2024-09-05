@@ -84,7 +84,7 @@ func TestUpdateAlbum(t *testing.T) {
 	albumID := "1"
 
 	// Update the album with a new artist value
-	reqBody := strings.NewReader(`{"artist":"New Artist Name", "title":"New Album", "price":9.99}`)
+	reqBody := strings.NewReader(`{"id": 1, "artist":"New Artist Name", "title":"New Album", "price":9.99}`)
 	req, _ := http.NewRequest(http.MethodPut, "/albums/"+albumID, reqBody)
 	req.Header.Set("Content-Type", "application/json")
 	updateResp := httptest.NewRecorder()
