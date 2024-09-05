@@ -1,10 +1,10 @@
-# piontec-kratix-1
+# idp-demo-app
 
-Chart version 0.1.0, app version 0.1.0
+Chart version 0.2.0, app version 0.2.0
 
 A Helm chart to deploy the sample golang based web service project.
 
-**Homepage:** <https://github.com/demotechinc/piontec-kratix-1/>
+**Homepage:** <https://github.com/demotechinc/idp-demo-app/>
 
 ## Requirements
 
@@ -20,10 +20,16 @@ Use the values below to configure the chart's values.
 | autoscaling.minReplicas | int | `3` | Min number of Pods autoscaler can deploy. |
 | autoscaling.targetCPUUtilizationPercentage | int | `80` | Pod scale up critieria based on CPU usage. |
 | autoscaling.targetMemoryUtilizationPercentage | int | `80` | Pod scale up critieria based on Memory usage. |
+| database.address | string | `"127.0.0.1"` | Address to connect to the mysql database |
+| database.name | string | `"app-db"` | The name of the logical database to conenct to |
+| database.password | string | `"pass"` | Password to use for the mysql connection |
+| database.port | int | `3306` | Port to connect to the mysql database |
+| database.username | string | `"user"` | Username to use for the mysql connection |
 | fullnameOverride | string | `""` | Override the default name generated for this specific chart Release. |
+| ginMode | string | `"debug"` | Configure run mode of the gin web framework; can be 'debug' or 'production' |
 | image.pullPolicy | string | `"IfNotPresent"` | Configure image pull policy. |
 | image.registry | string | `"ghcr.io"` | Set the domain of your container images registry. |
-| image.repository | string | `"demotechinc/piontec-kratix-1"` | Set the name of the repository within the registry. |
+| image.repository | string | `"demotechinc/idp-demo-app"` | Set the name of the repository within the registry. |
 | imagePullSecrets | list | `[]` | Configure login secrets for the container images registry. |
 | ingress.annotations | object | `{}` | Optional annotations for the Ingress definition. If your cluster has "CertManager" operator running, you can use "cert-manager.io/cluster-issuer" annotation to [automatically generate a certificate for it](https://cert-manager.io/docs/usage/). |
 | ingress.enabled | bool | `true` | Should the Service be accessible through an Ingress. This needs an Ingress controller to be configured already on your cluster. |
@@ -35,6 +41,9 @@ Use the values below to configure the chart's values.
 | pdb | object | `{"enabled":true}` | Should the chart deploy a [PodDisruptionBudget](https://kubernetes.io/docs/tasks/run-application/configure-pdb/) to limit disruptions based on administrative tasks. |
 | podAnnotations | object | `{}` | Set additional annotations for the pods created. |
 | podListenPort | int | `8080` | Configure the TCP port on which your pods will listen for connections. |
+| redis.address | string | `"127.0.0.1"` | Address to connect to the redis database |
+| redis.password | string | `"pass"` | Password to use for the redis connection |
+| redis.port | int | `6379` | Port to connect to the redis database |
 | replicaCount | int | `3` | Number of Pod replicas to deploy. Used only if 'autoscaling.enabled' is 'false'. |
 | resources | object | `{"limits":{"cpu":"500m","memory":"512Mi"},"requests":{"cpu":"100m","memory":"128Mi"}}` | Configure [Pod resources](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/). |
 | service.annotations | object | `{}` | Optional annotations for the Service definition. If your cluster has "ExternalDNS" operator running, you can use "external-dns.alpha.kubernetes.io/hostname" annotation to [automatically register DNS name for your service](https://github.com/kubernetes-sigs/external-dns). |

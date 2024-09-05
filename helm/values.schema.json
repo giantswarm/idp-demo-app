@@ -1,154 +1,402 @@
 {
-  "$schema": "http://json-schema.org/schema#",
+  "$schema": "http://json-schema.org/draft-07/schema#",
   "properties": {
     "autoscaling": {
       "properties": {
         "enabled": {
+          "default": "true",
+          "description": "Turn on Pod replicas number autoscaling instead of setting a constant value. your\ncluster must support [ Horizontal Pod Autoscaling ](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/).",
+          "title": "enabled",
           "type": "boolean"
         },
         "maxReplicas": {
+          "default": "10",
+          "description": "Max number of Pods autoscaler can deploy.",
+          "title": "maxReplicas",
           "type": "integer"
         },
         "minReplicas": {
+          "default": "3",
+          "description": "Min number of Pods autoscaler can deploy.",
+          "title": "minReplicas",
           "type": "integer"
         },
         "targetCPUUtilizationPercentage": {
+          "default": "80",
+          "description": "Pod scale up critieria based on CPU usage.",
+          "title": "targetCPUUtilizationPercentage",
           "type": "integer"
         },
         "targetMemoryUtilizationPercentage": {
+          "default": "80",
+          "description": "Pod scale up critieria based on Memory usage.",
+          "title": "targetMemoryUtilizationPercentage",
           "type": "integer"
         }
       },
+      "required": [
+        "enabled",
+        "minReplicas",
+        "maxReplicas",
+        "targetCPUUtilizationPercentage",
+        "targetMemoryUtilizationPercentage"
+      ],
+      "title": "autoscaling",
+      "type": "object"
+    },
+    "database": {
+      "properties": {
+        "address": {
+          "default": "127.0.0.1",
+          "description": "Address to connect to the mysql database",
+          "title": "address",
+          "type": "string"
+        },
+        "name": {
+          "default": "app-db",
+          "description": "The name of the logical database to conenct to",
+          "title": "name",
+          "type": "string"
+        },
+        "password": {
+          "default": "pass",
+          "description": "Password to use for the mysql connection",
+          "title": "password",
+          "type": "string"
+        },
+        "port": {
+          "default": "3306",
+          "description": "Port to connect to the mysql database",
+          "title": "port",
+          "type": "integer"
+        },
+        "username": {
+          "default": "user",
+          "description": "Username to use for the mysql connection",
+          "title": "username",
+          "type": "string"
+        }
+      },
+      "required": [
+        "address",
+        "name",
+        "username",
+        "password",
+        "port"
+      ],
+      "title": "database",
       "type": "object"
     },
     "fullnameOverride": {
+      "default": "",
+      "description": "Override the default name generated for this specific chart Release.",
+      "title": "fullnameOverride",
       "type": "string"
+    },
+    "ginMode": {
+      "default": "debug",
+      "description": "Configure run mode of the gin web framework; can be 'debug' or 'production'",
+      "title": "ginMode",
+      "type": "string"
+    },
+    "global": {
+      "description": "Global values are values that can be accessed from any chart or subchart by exactly the same name.",
+      "title": "global",
+      "type": "object"
     },
     "image": {
       "properties": {
         "pullPolicy": {
+          "default": "IfNotPresent",
+          "description": "Configure image pull policy.",
+          "title": "pullPolicy",
           "type": "string"
         },
         "registry": {
+          "default": "ghcr.io",
+          "description": "Set the domain of your container images registry.",
+          "title": "registry",
           "type": "string"
         },
         "repository": {
+          "default": "demotechinc/idp-demo-app",
+          "description": "Set the name of the repository within the registry.",
+          "title": "repository",
           "type": "string"
         }
       },
+      "required": [
+        "registry",
+        "repository",
+        "pullPolicy"
+      ],
+      "title": "image",
       "type": "object"
     },
     "imagePullSecrets": {
+      "description": "Configure login secrets for the container images registry.",
+      "items": {},
+      "title": "imagePullSecrets",
       "type": "array"
     },
     "ingress": {
       "properties": {
         "annotations": {
+          "description": "Optional annotations for the Ingress definition. If your cluster has \"CertManager\"\noperator running, you can use \"cert-manager.io/cluster-issuer\"\nannotation to [automatically generate a certificate for it](https://cert-manager.io/docs/usage/).",
+          "title": "annotations",
           "type": "object"
         },
         "enabled": {
+          "default": "true",
+          "description": "Should the Service be accessible through an Ingress. This needs an Ingress controller\nto be configured already on your cluster.",
+          "title": "enabled",
           "type": "boolean"
         },
         "host": {
+          "default": "chart-example.local",
+          "description": "cert-manager.io/cluster-issuer: \"letsencrypt-prod\"\nkubernetes.io/ingress.class: nginx\nHTTP host that you want to use for your service.",
+          "title": "host",
           "type": "string"
         },
         "tls": {
+          "description": "Optional TLS certificate configuration. You can use it with \"CertManager\" or\nprovide your own certificate.",
+          "items": {},
+          "title": "tls",
           "type": "array"
         }
       },
+      "required": [
+        "enabled",
+        "annotations",
+        "host",
+        "tls"
+      ],
+      "title": "ingress",
       "type": "object"
     },
     "monitoring": {
       "properties": {
         "serviceMonitor": {
+          "description": "If your cluster supports prometheus-operator configuration of metrics data,\nenable this to have metrics from your application automatically ingested\nby prometheus.",
           "properties": {
             "enabled": {
+              "default": "true",
+              "title": "enabled",
               "type": "boolean"
             }
           },
+          "required": [
+            "enabled"
+          ],
+          "title": "serviceMonitor",
           "type": "object"
         }
       },
+      "required": [
+        "serviceMonitor"
+      ],
+      "title": "monitoring",
       "type": "object"
     },
     "nameOverride": {
+      "default": "",
+      "description": "Override the default name generated for the chart objects.",
+      "title": "nameOverride",
       "type": "string"
     },
     "nodeSelector": {
+      "description": "Optional node delector to limit the nodes where pods of the chart can be deployed.",
+      "title": "nodeSelector",
       "type": "object"
     },
     "pdb": {
+      "description": "Should the chart deploy a [PodDisruptionBudget](https://kubernetes.io/docs/tasks/run-application/configure-pdb/)\nto limit disruptions based on administrative tasks.",
       "properties": {
         "enabled": {
+          "default": "true",
+          "title": "enabled",
           "type": "boolean"
         }
       },
+      "required": [
+        "enabled"
+      ],
+      "title": "pdb",
       "type": "object"
     },
     "podAnnotations": {
+      "description": "Set additional annotations for the pods created.",
+      "title": "podAnnotations",
       "type": "object"
     },
     "podListenPort": {
+      "default": "8080",
+      "description": "Configure the TCP port on which your pods will listen for connections.",
+      "title": "podListenPort",
       "type": "integer"
     },
+    "redis": {
+      "properties": {
+        "address": {
+          "default": "127.0.0.1",
+          "description": "Address to connect to the redis database",
+          "title": "address",
+          "type": "string"
+        },
+        "password": {
+          "default": "pass",
+          "description": "Password to use for the redis connection",
+          "title": "password",
+          "type": "string"
+        },
+        "port": {
+          "default": "6379",
+          "description": "Port to connect to the redis database",
+          "title": "port",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "address",
+        "password",
+        "port"
+      ],
+      "title": "redis",
+      "type": "object"
+    },
     "replicaCount": {
+      "default": "3",
+      "description": "Number of Pod replicas to deploy. Used only if 'autoscaling.enabled' is 'false'.",
+      "title": "replicaCount",
       "type": "integer"
     },
     "resources": {
+      "description": "Configure [Pod resources](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/).",
       "properties": {
         "limits": {
           "properties": {
             "cpu": {
+              "default": "500m",
+              "title": "cpu",
               "type": "string"
             },
             "memory": {
+              "default": "512Mi",
+              "title": "memory",
               "type": "string"
             }
           },
+          "required": [
+            "cpu",
+            "memory"
+          ],
+          "title": "limits",
           "type": "object"
         },
         "requests": {
           "properties": {
             "cpu": {
+              "default": "100m",
+              "title": "cpu",
               "type": "string"
             },
             "memory": {
+              "default": "128Mi",
+              "title": "memory",
               "type": "string"
             }
           },
+          "required": [
+            "cpu",
+            "memory"
+          ],
+          "title": "requests",
           "type": "object"
         }
       },
+      "required": [
+        "limits",
+        "requests"
+      ],
+      "title": "resources",
       "type": "object"
     },
     "service": {
       "properties": {
         "annotations": {
+          "description": "Optional annotations for the Service definition. If your cluster has \"ExternalDNS\"\noperator running, you can use \"external-dns.alpha.kubernetes.io/hostname\"\nannotation to [automatically register DNS name for your service](https://github.com/kubernetes-sigs/external-dns).",
+          "title": "annotations",
           "type": "object"
         },
         "port": {
+          "default": "80",
+          "description": "TCP port that the service will be exposed on.",
+          "title": "port",
           "type": "integer"
         },
         "type": {
+          "default": "ClusterIP",
+          "description": "The type of [ Service ](https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types).",
+          "title": "type",
           "type": "string"
         }
       },
+      "required": [
+        "type",
+        "port",
+        "annotations"
+      ],
+      "title": "service",
       "type": "object"
     },
     "serviceAccount": {
       "properties": {
         "annotations": {
+          "description": "Annotations to add to the service account.",
+          "title": "annotations",
           "type": "object"
         },
         "create": {
+          "default": "true",
+          "description": "Specifies whether a service account should be created.",
+          "title": "create",
           "type": "boolean"
         },
         "name": {
+          "default": "",
+          "description": "The name of the service account to use.\nIf not set and create is true, a name is generated using the fullname template",
+          "title": "name",
           "type": "string"
         }
       },
+      "required": [
+        "create",
+        "annotations",
+        "name"
+      ],
+      "title": "serviceAccount",
       "type": "object"
     }
   },
+  "required": [
+    "nameOverride",
+    "fullnameOverride",
+    "image",
+    "imagePullSecrets",
+    "serviceAccount",
+    "podAnnotations",
+    "podListenPort",
+    "ginMode",
+    "database",
+    "redis",
+    "resources",
+    "replicaCount",
+    "autoscaling",
+    "pdb",
+    "nodeSelector",
+    "service",
+    "ingress",
+    "monitoring"
+  ],
   "type": "object"
 }

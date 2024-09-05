@@ -2,12 +2,12 @@
 apiVersion: policy/v1
 kind: PodDisruptionBudget
 metadata:
-  name: {{ include "piontec-kratix-1.fullname" . }}
+  name: {{ include "idp-demo-app.fullname" . }}
   labels:
-    {{- include "piontec-kratix-1.labels" . | nindent 4 }}
+    {{- include "idp-demo-app.labels" . | nindent 4 }}
 spec:
   minAvailable: 2
   selector:
     matchLabels:
-      {{- include "piontec-kratix-1.selectorLabels" . | nindent 6 }}
+      {{- include "idp-demo-app.selectorLabels" . | nindent 6 }}
 {{- end }}
