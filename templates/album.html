@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<script>
+	function deleteAlbum(albumId) {
+		// Make HTTP DELETE request to delete the album with the given ID
+		fetch(`/albums/${albumId}`, {
+			method: 'DELETE',
+		})
+			.then(response => {
+				if (response.redirected) {
+					location.replace(response.url);
+				}
+				else if (response.ok) {
+					location.replace('/albums');
+				} else {
+					console.error('Failed to delete album:', response.status);
+				}
+			})
+			.catch(error => {
+				console.error('Error deleting album:', error);
+			});
+	}
+	function saveChanges(albumId) {
+		const title = document.querySelector(`input[name="title"]`).value;
+		const artist = document.querySelector(`input[name="artist"]`).value;
+		const price = parseFloat(document.querySelector(`input[name="price"]`).value);
+		const id = parseInt(albumId)
+
+		const data = {
+			title: title,
+			artist: artist,
+			price: price,
+			id: id
+		};
+
+		jsonData = JSON.stringify(data);
+		console.info(jsonData);
+
+		fetch(`/albums/${albumId}`, {
+			method: 'PUT',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: jsonData
+		})
+			.then(response => {
+				if (response.redirected) {
+					location.replace(response.url);
+				}
+				else if (response.ok) {
+					location.replace('/albums');
+				} else {
+					console.error('Failed to save changes:', response.status);
+				}
+			})
+			.catch(error => {
+				console.error('Error saving changes:', error);
+			});
+	}
+</script>
+
+<head>
+	<title>Album details</title>
+</head>
+
+<body>
+	<h1>Album details</h1>
+	<table>
+		<thead>
+			<tr>
+				<th>Title</th>
+				<th>Artist</th>
+				<th>Price</th>
+				<th></th>
+				<th></th>
+				<th></th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td>
+					<input type="hidden" id="id" name="id" value="{{.Album.ID}}">
+					<input type="text" id="title" name="title" value="{{.Album.Title}}">
+				</td>
+				<td><input type="text" id="artist" name="artist" value="{{.Album.Artist}}"></td>
+				<td><input type="number" id="price" name="price" value="{{.Album.Price}}"></td>
+				<td>
+					<button onclick="deleteAlbum('{{.Album.ID}}')">Delete</button>
+				</td>
+				<td>
+					<button onclick="saveChanges('{{.Album.ID}}')">Save</button>
+				</td>
+				<td>
+					<button onclick="location.href='/albums'">Cancel</button>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+</body>
+
+</html>

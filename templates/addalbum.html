@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<script>
+	function addAlbum() {
+		const title = document.querySelector(`input[name="title"]`).value;
+		const artist = document.querySelector(`input[name="artist"]`).value;
+		const price = parseFloat(document.querySelector(`input[name="price"]`).value);
+
+		const data = {
+			title: title,
+			artist: artist,
+			price: price
+		};
+
+		jsonData = JSON.stringify(data);
+		console.info(jsonData);
+
+		fetch(`/albums`, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: jsonData
+		})
+			.then(response => {
+				if (response.redirected) {
+					location.replace(response.url);
+				}
+				else if (response.ok) {
+					location.replace('/albums');
+				} else {
+					console.error('Failed to save changes:', response.status);
+				}
+			})
+			.catch(error => {
+				console.error('Error saving changes:', error);
+			});
+	}
+</script>
+
+<head>
+	<title>Add Album</title>
+</head>
+
+<body>
+	<h1>Add Album</h1>
+	<label for="title">Title:</label>
+	<input type="text" id="title" name="title" required><br><br>
+
+	<label for="artist">Artist:</label>
+	<input type="text" id="artist" name="artist" required><br><br>
+
+	<label for="price">Price:</label>
+	<input type="number" id="price" name="price" required><br><br>
+
+	<button onclick="addAlbum()">Add album</button>
+</body>
+
+</html>

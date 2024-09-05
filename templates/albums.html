@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Albums</title>
+</head>
+<body>
+	<h1>Albums</h1>
+	<button onclick="window.location.href = '/addalbum';">Add Album</button>
+	<table>
+		<thead>
+			<tr>
+				<th>Title</th>
+				<th>Artist</th>
+			</tr>
+		</thead>
+		<tbody>
+			{{range .Albums}}
+				<tr>
+					<td><a href="albums/{{.ID}}">{{.Title}}</a></td>
+					<td>{{.Artist}}</td>
+				</tr>
+			{{end}}
+		</tbody>
+	</table>
+</body>
+</body>
+</html>
