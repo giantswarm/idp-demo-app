@@ -12,9 +12,9 @@ jobs:
       pull-requests: write
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@65d7f2d534ac1bc67fcd62888c5f4f3d2cb2b236 # v4
         with:
           python-version: 3.11
       - name: Install pre-commit
@@ -22,7 +22,7 @@ jobs:
       - name: Run pre-commit autoupdate
         run: pre-commit autoupdate
       - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v5
+        uses: peter-evans/create-pull-request@4e1beaa7521e8b457b572c090b25bd3db56bf1c5 # v5
         with:
           branch: update/pre-commit-autoupdate
           title: "[Bot] auto-update pre-commit hooks"
