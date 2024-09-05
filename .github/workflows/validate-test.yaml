@@ -13,21 +13,21 @@ jobs:
   validate:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: 3.11
-    - name: Install golangci
-      run: curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b "$HOME/.local/bin" v1.54.2
-    - name: Install helm-docs
-      uses: jaxxstorm/action-install-gh-release@v1.12.0
-      with:
-        repo: norwoodj/helm-docs
-        tag: v1.11.0
-        cache: enable
-    - name: Run pre-commit
-      uses: pre-commit/action@v3.0.1
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.11
+      - name: Install golangci
+        run: curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b "$HOME/.local/bin" v1.54.2
+      - name: Install helm-docs
+        uses: jaxxstorm/action-install-gh-release@v1.12.0
+        with:
+          repo: norwoodj/helm-docs
+          tag: v1.11.0
+          cache: enable
+      - name: Run pre-commit
+        uses: pre-commit/action@v3.0.1
   test:
     runs-on: ubuntu-latest
     needs: validate
@@ -36,10 +36,10 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v4
         with:
-          go-version: '1.20.x'
+          go-version: "1.20.x"
       - name: Write GoList for Nancy
-        run: go list -json -m all > go.list
+        run: go list -json -deps ./... > go.list
       - name: Run Nancy
-        uses: sonatype-nexus-community/nancy-github-action@main
+        uses: sonatype-nexus-community/nancy-github-action@aae196481b961d446f4bff9012e4e3b63d7921a4 # v1.0.2
       - name: Test
         run: go test -v ./...
