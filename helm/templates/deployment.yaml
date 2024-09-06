@@ -1,16 +1,16 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "piontec-kratix-1.fullname" . }}
+  name: {{ include "idp-demo-app.fullname" . }}
   labels:
-    {{- include "piontec-kratix-1.labels" . | nindent 4 }}
+    {{- include "idp-demo-app.labels" . | nindent 4 }}
 spec:
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
   {{- end }}
   selector:
     matchLabels:
-      {{- include "piontec-kratix-1.selectorLabels" . | nindent 6 }}
+      {{- include "idp-demo-app.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       {{- with .Values.podAnnotations }}
@@ -18,13 +18,13 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        {{- include "piontec-kratix-1.selectorLabels" . | nindent 8 }}
+        {{- include "idp-demo-app.selectorLabels" . | nindent 8 }}
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "piontec-kratix-1.serviceAccountName" . }}
+      serviceAccountName: {{ include "idp-demo-app.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
@@ -32,6 +32,24 @@ spec:
           env:
             - name: LISTEN_PORT
               value: "{{ .Values.podListenPort | default "8080" }}"
+            - name: GIN_MODE
+              value: "{{ .Values.ginMode | default "debug" }}"
+            - name: DB_USERNAME
+              value: "{{ .Values.database.username }}"
+            - name: DB_PASSWORD
+              value: "{{ .Values.database.password }}"
+            - name: DB_NAME
+              value: "{{ .Values.database.name }}"
+            - name: DB_ADDRESS
+              value: "{{ .Values.database.address }}"
+            - name: DB_PORT
+              value: "{{ .Values.database.port | default "3306" }}"
+            - name: REDIS_ADDRESS
+              value: "{{ .Values.redis.address }}"
+            - name: REDIS_PASSWORD
+              value: "{{ .Values.redis.password }}"
+            - name: REDIS_PORT
+              value: "{{ .Values.redis.port | default "6379" }}"
           securityContext:
             allowPrivilegeEscalation: false
             seccompProfile:
@@ -55,7 +73,7 @@ spec:
               port: http
           readinessProbe:
             httpGet:
-              path: /hello
+              path: /ping
               port: http
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
@@ -74,7 +92,7 @@ spec:
                     - key: "app.kubernetes.io/name"
                       operator: In
                       values:
-                        - {{ include "piontec-kratix-1.name" . }}
+                        - {{ include "idp-demo-app.name" . }}
                     - key: "app.kubernetes.io/instance"
                       operator: In
                       values:

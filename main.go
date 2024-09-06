@@ -12,8 +12,6 @@ import (
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 
-	"github.com/gin-contrib/cache"
-	"github.com/gin-contrib/cache/persistence"
 	ginzap "github.com/gin-contrib/zap"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
@@ -292,15 +290,15 @@ func ginPrometheusMetrics() gin.HandlerFunc {
 	}
 }
 
-func setupRedisCache() (persistence.CacheStore, error) {
-	redisAddr := os.Getenv("REDIS_ADDRESS")
-	redisPassword := os.Getenv("REDIS_PASSWORD")
-	redisPort := os.Getenv("REDIS_PORT")
-	if redisAddr == "" || redisPort == "" {
-		return nil, fmt.Errorf("redis address:port is not set in environment variables")
-	}
-	return persistence.NewRedisCache(fmt.Sprintf("%s:%s", redisAddr, redisPort), redisPassword, 10*time.Second), nil
-}
+//func setupRedisCache() (persistence.CacheStore, error) {
+//	redisAddr := os.Getenv("REDIS_ADDRESS")
+//	redisPassword := os.Getenv("REDIS_PASSWORD")
+//	redisPort := os.Getenv("REDIS_PORT")
+//	if redisAddr == "" || redisPort == "" {
+//		return nil, fmt.Errorf("redis address:port is not set in environment variables")
+//	}
+//	return persistence.NewRedisCache(fmt.Sprintf("%s:%s", redisAddr, redisPort), redisPassword, 10*time.Second), nil
+//}
 
 func setupRouter(storeType storeType) *gin.Engine {
 	router := gin.New()
@@ -314,20 +312,20 @@ func setupRouter(storeType storeType) *gin.Engine {
 	router.LoadHTMLGlob("./templates/*")
 
 	var store albumStore
-	var cacheStore persistence.CacheStore
+	//var cacheStore persistence.CacheStore
 	if storeType == storeMemory {
 		store = NewInMemoryStore()
-		cacheStore = persistence.NewInMemoryStore(time.Second)
+		//cacheStore = persistence.NewInMemoryStore(time.Second)
 	} else {
 		dbStore, err := NewDbStore()
 		if err != nil {
 			log.Panicf("Critical error: %s", err)
 		}
 		store = dbStore
-		cacheStore, err = setupRedisCache()
-		if err != nil {
-			log.Panicf("Critical error: %s", err)
-		}
+		//cacheStore, err = setupRedisCache()
+		//if err != nil {
+		//	log.Panicf("Critical error: %s", err)
+		//}
 	}
 	albumsHandler := NewAlbumsHandler(store)
 
@@ -339,9 +337,10 @@ func setupRouter(storeType storeType) *gin.Engine {
 		c.HTML(http.StatusOK, "addalbum.html", gin.H{})
 	})
 	router.GET("/albums", albumsHandler.ListAlbums)
-	router.GET("/cached_albums", cache.CachePage(cacheStore, 10*time.Second, albumsHandler.ListAlbums))
+	//router.GET("/cached_albums", cache.CachePage(cacheStore, 10*time.Second, albumsHandler.ListAlbums))
 	router.POST("/albums", albumsHandler.CreateAlbum)
-	router.GET("/albums/:id", cache.CachePage(cacheStore, 10*time.Second, albumsHandler.GetAlbum))
+	router.GET("/albums/:id", albumsHandler.GetAlbum)
+	//router.GET("/albums/:id", cache.CachePage(cacheStore, 10*time.Second, albumsHandler.GetAlbum))
 	router.PUT("/albums/:id", albumsHandler.UpdateAlbum)
 	router.DELETE("/albums/:id", albumsHandler.DeleteAlbum)
 
