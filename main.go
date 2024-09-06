@@ -339,6 +339,7 @@ func setupRouter(storeType storeType) *gin.Engine {
 	router.GET("/albums", albumsHandler.ListAlbums)
 	//router.GET("/cached_albums", cache.CachePage(cacheStore, 10*time.Second, albumsHandler.ListAlbums))
 	router.POST("/albums", albumsHandler.CreateAlbum)
+	router.GET("/albums/:id", albumsHandler.GetAlbum)
 	//router.GET("/albums/:id", cache.CachePage(cacheStore, 10*time.Second, albumsHandler.GetAlbum))
 	router.PUT("/albums/:id", albumsHandler.UpdateAlbum)
 	router.DELETE("/albums/:id", albumsHandler.DeleteAlbum)
