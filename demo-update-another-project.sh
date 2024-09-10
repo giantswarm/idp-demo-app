@@ -1,4 +1,4 @@
-#!/bin/bash
+﻿#!/bin/bash
 
 if [[ "$#" -ne 1 ]]; then
   echo "Usage: $0 <organization/repo_to_copy_to>"
@@ -29,7 +29,8 @@ git config user.email "developer@demotechinc.com"
 git config user.name "Platform Developer"
 git checkout -b new-app-feature
 cp "$source_dir"/go{.mod,.sum} .
-cp -r "$source_dir"/templates/ .
+mkdir -p ./templates
+cp -r "$source_dir"/templates/ ./templates
 cp "$source_dir"/*.go .
 cp helm/values.* helm/
 cp helm/templates/*.yaml helm/templates/
