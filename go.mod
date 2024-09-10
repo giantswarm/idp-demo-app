@@ -2,7 +2,7 @@ module github.com/demotechinc/piontec-kratix-1
 
 go 1.21.0
 
-toolchain go1.22.2
+toolchain go1.23.1
 
 require (
 	github.com/gin-contrib/cache v1.3.0
