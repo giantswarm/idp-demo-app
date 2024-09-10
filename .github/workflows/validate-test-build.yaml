@@ -1,0 +1,121 @@
+name: Validate, test and build code
+
+on:
+  workflow_call: {}
+  workflow_dispatch: {}
+  push:
+    branches:
+      - "*"
+    tags-ignore:
+      - "*"
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.11
+      - name: Install golangci
+        run: curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b "$HOME/.local/bin" v1.54.2
+      - name: Install helm-docs
+        uses: jaxxstorm/action-install-gh-release@v1.12.0
+        with:
+          repo: norwoodj/helm-docs
+          tag: v1.11.0
+          cache: enable
+      - name: Run pre-commit
+        uses: pre-commit/action@v3.0.1
+  test:
+    runs-on: ubuntu-latest
+    needs: validate
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: "1.22.x"
+      - name: Write GoList for Nancy
+        run: go list -json -deps ./... > go.list
+      - name: Run Nancy
+        uses: sonatype-nexus-community/nancy-github-action@aae196481b961d446f4bff9012e4e3b63d7921a4 # v1.0.2
+      - name: Test
+        run: go test -v ./...
+  build-binary-and-image:
+    permissions:
+      contents: write # needed to write releases
+      id-token: write # needed for keyless signing
+      packages: write # needed for ghcr access
+    needs: [validate-and-test]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+        with:
+          fetch-depth: 0
+      - name: Checkout - force fetch tags
+        run: git fetch --force --tags
+      - name: Setup Go
+        uses: actions/setup-go@93397bea11091df50f3d7e59dc26a7711a8bcfbe # v4.1.0
+        with:
+          go-version: 1.22.x
+          cache: false
+      - name: Setup QEMU
+        uses: docker/setup-qemu-action@68827325e0b33c7199eb31dd4e31fbe9023e06e3 # v3.0.0
+      - name: Setup Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@d70bba72b1f3fd22344832f00baa16ece964efeb # v3.3.0
+      #      - name: Setup Syft
+      #        uses: anchore/sbom-action/download-syft@e8d2a6937ecead383dfe75190d104edd1f9c5751 # v0.16.0
+      #      - name: Setup Cosign
+      #        uses: sigstore/cosign-installer@59acb6260d9c0ba8f4a2f9d9b48431a222b68e20 # v3.5.0
+      - name: Setup Helm
+        uses: jaxxstorm/action-install-gh-release@v1.12.0
+        with:
+          repo: helm/helm
+          tag: v3.12.3
+          cache: enable
+      - name: Setup app-build-suite
+        run: curl -fsSL https://github.com/giantswarm/app-build-suite/releases/latest/download/dabs.sh -o /tmp/dabs.sh && chmod +x /tmp/dabs.sh && sed -i 's/docker run -it --rm/docker run --rm/' /tmp/dabs.sh
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@0d4c9c5ea7693da7b068278f7b52bda2a190a446 # v3.2.0
+        with:
+          registry: ghcr.io
+          username: build_bot
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Login helm to OCI registry
+        run: helm registry login ghcr.io -u build_bot -p "${{ secrets.GITHUB_TOKEN }}"
+      #      - name: Run GoReleaser
+      #        uses: goreleaser/goreleaser-action@5742e2a039330cbb23ebf35f046f814d4c6ff811 # v5.1.0
+      #        with:
+      #          version: latest
+      #          args: release
+      #        env:
+      #          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Go build
+        run: go build ./...
+      - name: Run app-build-suite to build the helm chart
+        run: /tmp/dabs.sh -c helm 2>&1 | tee /tmp/abs.log
+      - name: Capture the helm chart name
+        run: >-
+          echo "CHART_FILE=$(
+            awk -F":" '/packaged chart and saved it to/ {gsub(/ /, ""); print $2}' /tmp/abs.log
+          )" >> "$GITHUB_ENV"
+      - name: Capture the helm chart version
+        run: >-
+          echo "CHART_VERSION=$(
+            awk -F"[:,]" '/=> \(version/ {gsub(/[ "]/, ""); print $2; exit }' /tmp/abs.log
+          )" >> "$GITHUB_ENV"
+      - name: Check detected version
+        run: '[ -z "${CHART_FILE}" ] && exit 1 || echo "CHART_FILE=${CHART_FILE}"; [ -z "${CHART_VERSION}" ] && exit 1 || echo "CHART_VERSION=${CHART_VERSION}"'
+      - name: Push the helm chart to registry
+        run: helm push "${CHART_FILE}" "oci://ghcr.io/demotechinc/charts" 2>&1 | tee /tmp/helm-push.log
+#      - name: Capture the helm chart SHA256
+#        run: >-
+#          echo "CHART_SHA256=$(
+#            awk -F" " '/^Digest:/ {print $2}' /tmp/helm-push.log
+#          )" >> "$GITHUB_ENV"
+#      - name: Sign the helm chart
+#        run: cosign sign --upload=true -y "ghcr.io/demotechinc/charts/piontec-kratix-1@${CHART_SHA256}"
