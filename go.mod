@@ -8,7 +8,7 @@ require (
 	github.com/gin-contrib/cache v1.3.0
 	github.com/gin-contrib/zap v1.1.4
 	github.com/gin-gonic/gin v1.10.0
-	github.com/prometheus/client_golang v1.20.2
+	github.com/prometheus/client_golang v1.20.4
 	github.com/stretchr/testify v1.9.0
 	go.uber.org/zap v1.27.0
 	gorm.io/driver/mysql v1.5.7
